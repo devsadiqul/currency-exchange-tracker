@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: gunicorn subscription_system.wsgi:application --bind 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: subscription_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:7.0
+
+  celery:
+    build: .
+    command: celery -A subscription_system worker -l info
+    env_file:
+      - .env
+    depends_on:
+      - web
+      - db
+      - redis
+    volumes:
+      - .:/app
+
+  celery-beat:
+    build: .
+    command: celery -A subscription_system beat -l info
+    env_file:
+      - .env
+    depends_on:
+      - web
+      - db
+      - redis
+    volumes:
+      - .:/app
+
+volumes:
+  mysql_data:

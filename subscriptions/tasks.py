@@ -1,0 +1,26 @@
+from celery import shared_task
+import requests
+from .models import ExchangeRateLog
+import environ
+
+
+env = environ.Env()
+environ.Env.read_env()
+
+
+@shared_task
+def fetch_exchange_rate():
+    api_key = env('EXCHANGE_RATE_API_KEY')
+    # url = "https://api.exchangerate-api.com/v4/latest/USD"
+    url = f'https://v6.exchangerate-api.com/v6/{api_key}/latest/USD'
+    
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = requests.json()
+        rate = data['rates'].get('BDT')
+        if rate:
+            ExchangeRateLog.objects.create(
+                base_currency='USD',
+                target_currency='BDT',
+                rate=rate
+            )            
