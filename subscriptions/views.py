@@ -10,6 +10,7 @@ import requests
 import environ
 from datetime import timedelta
 from django.utils import timezone
+from drf_yasg.utils import swagger_auto_schema
 
 
 env = environ.Env()
@@ -24,18 +25,21 @@ class SubscribeView(APIView):
     def post(self, request):
         plan_id = request.data.get('plan_id')
         
+        if not plan_id:
+          return Response({"plan_id": "This field is required."}, status=status.HTTP_400_BAD_REQUEST)
+        
         try:
           plan = Plan.objects.get(id=plan_id)
           subscription = Subscription.objects.create(
             user=request.user,
             plan=plan,
-            start_date=timezone.now,
-            end_date=timezone.now + timedelta(days=plan.duration_days),
+            start_date=timezone.now(),
+            end_date=timezone.now() + timedelta(days=plan.duration_days),
             status='active'
           )
           return Response(SubcriptionSerializer(subscription).data, status=status.HTTP_201_CREATED)
         except Plan.DoesNotExist:
-          return Response({'detail': 'Plan not found.'}, status=status.HTTP_404_NOT_FOUND)
+          return Response({'message': 'Plan not found.'}, status=status.HTTP_404_NOT_FOUND)
       
       
 class SubscriptionListView(APIView):
@@ -54,12 +58,16 @@ class CancelSubscriptionView(APIView):
     def post(self, request):
         subscription_id = request.data.get('subscription_id')
         
+        if not subscription_id:
+          return Response({"subscription_id": "This field is required."}, status=status.HTTP_400_BAD_REQUEST)
+        
         try:
           subscription = Subscription.objects.get(id=subscription_id, user=request.user)
           subscription.status = 'cancelled'
           subscription.save()
+          return Response({"message": "Subscription cancelled successfully!"}, status=status.HTTP_200_OK)
         except Subscription.DoesNotExist:
-          return Response({'detail': 'Subcription not found.'}, status=status.HTTP_404_NOT_FOUND)
+          return Response({'message': 'Subcription not found.'}, status=status.HTTP_404_NOT_FOUND)
       
       
 class ExchangeRateView(APIView):
@@ -83,8 +91,8 @@ class ExchangeRateView(APIView):
                     rate=rate
                 )            
                 return Response(ExchangeRateLogSerializer(log).data, status=status.HTTP_201_CREATED)
-            return Response({'detail': 'Target currency not found.'}, status=status.HTTP_404_NOT_FOUND)
-        return Response({'detail': 'API request failed.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'message': 'Target currency not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'message': 'API request failed.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     
 def subscription_list(request):
