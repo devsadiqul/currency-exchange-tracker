@@ -28,15 +28,24 @@ A Django-based subscription management system with currency exchange tracking.
    ```bash
    pip install -r requirements.txt
    ```
-3. Set up environment variables in `.env` (copy `.env.example`):
+3. Set up environment variables in `.env`:
    ```
-   DATABASE_URL=mysql://user:password@localhost:3306/subscription_db
+   SECRET_KEY='django-insecure-!t08(2d@22#s9w1qdyom#p2hxmc83&vnnbspi7=_4+u1o9zcgw'
+   DJANGO_SETTINGS_MODULE=subscription_system.settings
+   EXCHANGE_RATE_API_KEY=4852c549e5bc3e9997825487
    REDIS_URL=redis://localhost:6379/0
-   EXCHANGE_RATE_API_KEY=your_api_key
-   SECRET_KEY=your_django_secret_key
    DEBUG=True
    ```
-4. Set up MySQL database `subscription_db`
+4. Using Local Database (SQLite)
+   When you use the local SQLite database, make sure the following section in settings.py is uncommented (active):
+   ```
+   DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+      }
+   }
+   ```
 5. Run migrations:
    ```bash
    python manage.py migrate
@@ -60,16 +69,32 @@ A Django-based subscription management system with currency exchange tracking.
 
 ### Docker Setup
 1. Ensure Docker and Docker Compose are installed
-2. Set up `.env` file (copy `.env.example`)
-3. Run:
+2. Set up `.env` file
+   ```
+   SECRET_KEY='django-insecure-!t08(2d@22#s9w1qdyom#p2hxmc83&vnnbspi7=_4+u1o9zcgw'
+   DATABASE_URL=mysql://user:password@db:3306/subscription_db
+   DJANGO_SETTINGS_MODULE=subscription_system.settings
+   EXCHANGE_RATE_API_KEY=4852c549e5bc3e9997825487
+   REDIS_URL=redis://redis:6379/0
+   DEBUG=True
+   ```
+3. Using MySQL Database (with Docker)
+   For MySQL (typically in Docker), comment out the SQLite section and uncomment the following line to use the database URL from environment variables:
+   ```
+   # DATABASES = {
+   #     'default': env.db()
+   # }
+
+   ```
+4. Run:
    ```bash
    docker-compose up --build
    ```
-4. Apply migrations:
+5. Apply migrations:
    ```bash
    docker-compose exec web python manage.py migrate
    ```
-5. Create superuser:
+6. Create superuser:
    ```bash
    docker-compose exec web python manage.py createsuperuser
    ```
@@ -153,8 +178,9 @@ All endpoints except `/api/exchange-rate/` require JWT authentication. Obtain a 
 - **Admin**: http://localhost:8000/admin/ (superuser login)
 - **API**: http://localhost:8000/api/
 
-### Notes
-- Uses MySQL (SQLite supported with `DATABASE_URL=sqlite:///db.sqlite3`)
-- JWT authentication for APIs
-- Admin manages Plans, Subscriptions, ExchangeRateLogs
-- Submission: Push to public GitHub repo and submit URL via https://forms.gle/o/V2gx6GUUGjQDJ2HGA by 05 August 2025
+### Contact
+📌 **Maintainer:** Md. Sadiqul Islam  
+💼 **Role:** Backend Developer  
+🔗 [LinkedIn](https://www.linkedin.com/in/swesadiqul/)  
+📧 [mdsadiqulislam446@gmail.com](mailto:mdsadiqulislam446@gmail.com)  
+💻 [GitHub](https://github.com/swesadiqul)

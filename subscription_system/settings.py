@@ -42,10 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'rest_framework_simplejwt',
     'rest_framework',
-    'drf_yasg',
-    
+    'rest_framework_simplejwt',
     'subscriptions',
 ]
 
@@ -147,23 +145,18 @@ REST_FRAMEWORK = {
     )
 }
 
-# CELERY_BROKER_URL = env('REDIS_URL')
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-# CELERY_RESULT_BACKEND = env('REDIS_URL')
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-
+CELERY_BROKER_URL = env('REDIS_URL')
+CELERY_RESULT_BACKEND = env('REDIS_URL')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
 CELERY_BEAT_SCHEDULE = {
-    'fetch-exchange-rate-every-hour': {
+    'fetch-exchange-rate-every-minute': {
         'task': 'subscriptions.tasks.fetch_exchange_rate',
         'schedule': 60.0,
     },
 }
-
-
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=15),
