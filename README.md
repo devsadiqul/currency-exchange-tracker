@@ -37,7 +37,7 @@ A Django-based subscription management system with currency exchange tracking.
    DEBUG=True
    ```
 4. Using Local Database (SQLite)
-   When you use the local SQLite database, make sure the following section in settings.py is uncommented (active):
+   - When you use the local SQLite database, make sure the following section in settings.py is uncommented (active):
    ```
    DATABASES = {
     'default': {
@@ -79,7 +79,7 @@ A Django-based subscription management system with currency exchange tracking.
    DEBUG=True
    ```
 3. Using MySQL Database (with Docker)
-   For MySQL (typically in Docker), comment out the SQLite section and uncomment the following line to use the database URL from environment variables:
+   - For MySQL (typically in Docker), comment out the SQLite section and uncomment the following line to use the database URL from environment variables:
    ```
    # DATABASES = {
    #     'default': env.db()
